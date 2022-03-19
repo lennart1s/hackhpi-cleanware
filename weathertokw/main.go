@@ -72,9 +72,9 @@ type SolarRadiationAPIResponse struct {
 }
 
 type Request struct {
-	Lat      float64 `json:"lat"`
-	Long     float64 `json:"long"`
-	Capacity int     `json:"capacity"`
+	Lat      string `json:"lat"`
+	Long     string `json:"long"`
+	Capacity string `json:"capacity"`
 }
 
 func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -105,22 +105,18 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	query := req.URL.Query()
 
-	lat := fmt.Sprintf("%d", requestData.Lat)
-	long := fmt.Sprintf("%d", requestData.Long)
-	cap := strconv.Itoa(requestData.Capacity)
-
 	query.Add("api_key", api_key)
 	query.Add("dataset", "intl")
 	query.Add("format", "json")
 	query.Add("timeframe", "hourly")
-	query.Add("lat", lat)
-	query.Add("lon", long)
+	query.Add("lat", requestData.Lat)
+	query.Add("lon", requestData.Long)
 	query.Add("losses", "15")
 	query.Add("module_type", "0")
 	query.Add("array_type", "1")
 	query.Add("tilt", "40")
 	query.Add("azimuth", "180")
-	query.Add("system_capacity", cap)
+	query.Add("system_capacity", requestData.Capacity)
 
 	req.URL.RawQuery = query.Encode()
 	resp, err := client.Do(req)
