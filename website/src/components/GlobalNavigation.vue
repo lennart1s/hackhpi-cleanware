@@ -33,8 +33,10 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+@import '../assets/theme.styl';
+
 #nav
-  background-color: rgba(0, 0, 0, 0.2)
+  background-color: $secondary
   width: 100%
   height: 2rem
 
@@ -44,7 +46,7 @@ export default {
 
 .add-dc-btn
   color: white
-  background-color: rgb(44, 62, 143)
+  background-color: $accent
   border: none
   margin-left: auto
   height: 100%
@@ -52,4 +54,6 @@ export default {
   size: 3rem
   font-weight: bold
   cursor: pointer
+  &:hover
+    background-color: $accent-light
 </style>
