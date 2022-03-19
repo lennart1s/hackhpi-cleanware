@@ -14,10 +14,13 @@ export default {
     newDC({ commit, dispatch, state }) {
       commit('addDC', {
         name: `Unnamed ${state.dataCenters.length + 1}`,
+        numClusters: 1,
+        lat: 0,
+        long: 0,
       });
-      dispatch('saveDataCenter');
+      dispatch('saveDataCenters');
     },
-    saveDataCenter({ state }) {
+    saveDataCenters({ state }) {
       sessionStorage.setItem('dataCenters', JSON.stringify(state.dataCenters));
     },
     loadDataCenters({ state }) {
@@ -25,6 +28,10 @@ export default {
       if (data) {
         state.dataCenters = JSON.parse(data);
       }
+    },
+    updateDataCenter({ state, dispatch }, data) {
+      state.dataCenters[data.i] = data.dc;
+      dispatch('saveDataCenters');
     },
   },
 };
