@@ -1,10 +1,10 @@
 <template>
-  <div></div>
+  <div>DataCenter</div>
 </template>
 
 <script>
 export default {
-  name: 'HomeView',
+  name: 'DataCenter',
   components: {
   },
 };
