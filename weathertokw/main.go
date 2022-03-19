@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
 
-var api_key string = "92IQL3i8robcMWhbStuIxk9EZvY7nXsdJPDYjOOB" // os.Getenv("api_key")
+var api_key string = os.Getenv("api_key")
 
 type WeatherHandler struct {
 	Test int
@@ -70,9 +71,28 @@ type SolarRadiationAPIResponse struct {
 	} `json:"outputs"`
 }
 
-func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+type Request struct {
+	Lat      float64 `json:"lat"`
+	Long     float64 `json:"long"`
+	Capacity int     `json:"capacity"`
+}
 
+func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
+	if r.Method != http.MethodPost {
+		fmt.Fprint(w, `{"error":"Invalid method, use POST","kind":""`)
+		return
+	}
+
+	requestData := &Request{}
+	err := json.NewDecoder(r.Body).Decode(requestData)
+
+	if err != nil {
+		fmt.Fprint(w, fmt.Errorf(`{"error":"%w","kind":"decoding incoming request json"`, err))
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", "https://developer.nrel.gov/api/pvwatts/v6.json?", nil)
@@ -85,18 +105,22 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	query := req.URL.Query()
 
+	lat := fmt.Sprintf("%d", requestData.Lat)
+	long := fmt.Sprintf("%d", requestData.Long)
+	cap := strconv.Itoa(requestData.Capacity)
+
 	query.Add("api_key", api_key)
 	query.Add("dataset", "intl")
 	query.Add("format", "json")
 	query.Add("timeframe", "hourly")
-	query.Add("lat", "50.110924")
-	query.Add("lon", "8.682127")
-	query.Add("losses", "10")
-	query.Add("module_type", "1")
+	query.Add("lat", lat)
+	query.Add("lon", long)
+	query.Add("losses", "15")
+	query.Add("module_type", "0")
 	query.Add("array_type", "1")
 	query.Add("tilt", "40")
 	query.Add("azimuth", "180")
-	query.Add("system_capacity", "4")
+	query.Add("system_capacity", cap)
 
 	req.URL.RawQuery = query.Encode()
 	resp, err := client.Do(req)
@@ -116,8 +140,8 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &SolarRadiationAPIResponse{}
-	err = json.NewDecoder(resp.Body).Decode(data)
+	responseData := &SolarRadiationAPIResponse{}
+	err = json.NewDecoder(resp.Body).Decode(responseData)
 
 	if err != nil {
 		fmt.Fprint(w, fmt.Errorf(`{"error":"%w","kind":"decoding json response"`, err))
@@ -138,7 +162,7 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(Response{
 		StartTime: responseTime - (responseTime % (60 * 60)),
-		Kilowatts: data.Outputs.Ac[:val*24],
+		Kilowatts: responseData.Outputs.Ac[:val*24],
 	})
 
 }
