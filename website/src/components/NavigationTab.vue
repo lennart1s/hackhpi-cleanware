@@ -25,7 +25,6 @@ export default {
   background-color: $secondary
   height: 100%
   text-align: center
-  font-family: 'Calibri'
   text-decoration: none
   justify-content: center
   align-items: center
