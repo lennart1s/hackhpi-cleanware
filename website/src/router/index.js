@@ -14,7 +14,7 @@ const routes = [
   {
     path: '/dc/:dcIndex([0-9]+)',
     name: 'DataCenter',
-    coponent: DataCenter,
+    component: DataCenter,
   },
 ];
 

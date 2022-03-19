@@ -1,5 +1,11 @@
 <template>
   <div id="nav">
+    <router-link class="nav-tab"
+      :to="{ name: 'home' }"
+    >
+      <div>Home</div>
+    </router-link>
+
     <router-link
       v-for="dc, i of dataCenters" :key="i"
       :to="{ name: 'DataCenter', params: { dcIndex: i } }"
