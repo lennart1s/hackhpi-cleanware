@@ -14,12 +14,27 @@ export default {
 </script>
 
 <style scoped lang="stylus">
+@import '../assets/theme.styl';
+
+.router-link-exact-active
+  background-color: $primary !important
+
 .tab
+  display: flex
   width: 14ch
-  background-color: rgba(0, 0, 0, 0.2)
+  background-color: $secondary
   height: 100%
   text-align: center
+  font-family: 'Calibri'
+  text-decoration: none
+  justify-content: center
+  align-items: center
+  color: white
+  margin: 0 .1em
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   &:hover
-    background-color: rgba(0, 0, 0, 0.4)
+    background-color: $primary
     cursor: pointer
 </style>
