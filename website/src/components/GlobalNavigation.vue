@@ -1,29 +1,25 @@
 <template>
   <div id="nav">
-    <router-link class="nav-tab"
-      :to="{ name: 'home' }"
+    <NavigationTab :to="{ name: 'home' }">Home</NavigationTab>
+    <NavigationTab
+      v-for="dc, idx of dataCenters" :key="idx"
+      :to="{ name: 'DataCenter', params: { dcIndex: idx } }"
     >
-      <div>Home</div>
-    </router-link>
-
-    <router-link
-      v-for="dc, i of dataCenters" :key="i"
-      :to="{ name: 'DataCenter', params: { dcIndex: i } }"
-      class="nav-tab"
-    >
-      <div>
-        {{ dc.name }}
-      </div>
-    </router-link>
+      {{ dc.name }}
+    </NavigationTab>
     <button class="add-dc-btn" @click="addNewDC()">+</button>
   </div>
 </template>
 
 <script>
+import NavigationTab from '@/components/NavigationTab.vue';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'GlobalNavigation',
+  components: {
+    NavigationTab,
+  },
   methods: {
     ...mapActions(['newDC']),
     addNewDC() {
@@ -56,13 +52,4 @@ export default {
   size: 3rem
   font-weight: bold
   cursor: pointer
-
-.nav-tab
-  width: 14ch
-  background-color: rgba(0, 0, 0, 0.2)
-  height: 100%
-  text-align: center
-  &:hover
-    background-color: rgba(0, 0, 0, 0.4)
-    cursor: pointer
 </style>
