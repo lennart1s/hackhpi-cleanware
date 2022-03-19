@@ -1,4 +1,5 @@
 from flask import Flask, request
+import json
 
 app = Flask(__name__)
 
@@ -16,3 +17,14 @@ def alive():
 @app.route('/', methods=['GET'])
 def index():
   return 'index handler'
+
+@app.route('/task', methods=['PUT', 'DELETE'])
+def putDelHandler():
+  task = request.data.decode('utf8').replace("'", '"')
+  if request.method == 'PUT':
+    print('put: ')
+    print(task)
+  elif request.method == 'DELETE':
+    print('del: ')
+    print(task)
+  return {}
