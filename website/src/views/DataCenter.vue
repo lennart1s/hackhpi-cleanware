@@ -55,7 +55,7 @@ export default {
     this.loadDataCenters();
   },
   mounted() {
-    this.dataCenter = this.dataCenters[this.$route.params.dcIndex];
+    this.init();
   },
   methods: {
     ...mapActions(['saveDataCenters', 'updateDataCenter', 'loadDataCenters']),
@@ -68,6 +68,14 @@ export default {
       };
 
       this.updateDataCenter({ i: this.$route.params.dcIndex, dc: this.dataCenter });
+    },
+    init() {
+      this.dataCenter = this.dataCenters[this.$route.params.dcIndex];
+    },
+  },
+  watch: {
+    '$route.params.dcIndex': function () {
+      this.init();
     },
   },
 };
