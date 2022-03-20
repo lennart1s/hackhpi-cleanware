@@ -1,6 +1,6 @@
 export default {
   state: {
-    time: Date.now(),
+    time: 0,
   },
   getters: {
     time: (state) => state.time,

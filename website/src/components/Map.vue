@@ -1,6 +1,6 @@
 <!-- eslint-disable -->
 <template>
-  <div :id="`chartdiv${_uid}`" style="width:100%;height:600px"></div>
+  <div :id="`chartdiv${_uid}`" style="width:100%;height:700px"></div>
 </template>
 
 <script>
@@ -262,6 +262,7 @@ var button = root.container.children.push(
 
 button.events.on("click", function () {
   sendRandPack();
+  that.$emit('run');
 });
 // button.events.on("click", function () {
 //   addDest(4.3676, 50.8371);

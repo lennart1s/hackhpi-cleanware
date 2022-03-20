@@ -1,6 +1,7 @@
 <template>
   <CardOverlay ref="card"
     :ShowOnMount="false">
+    <p class="coords">{{lon}}° N, {{lat}}° E</p>
     <form>
       <label for="name">
         <input ref="name" type="text" class="editable" v-model="name"
@@ -46,14 +47,6 @@ export default {
     TasksCard,
   },
   props: {
-    lat: {
-      Type: Number,
-      default: 0,
-    },
-    lon: {
-      Type: Number,
-      default: 0,
-    },
   },
   data: () => ({
     dcIndex: 0,
@@ -61,6 +54,8 @@ export default {
     numClusters: 0,
     solarArea: 0,
     numTurbines: 0,
+    lat: 0,
+    lon: 0,
   }),
   methods: {
     ...mapActions(['newDataCenter', 'saveDataCenters']),
@@ -94,6 +89,8 @@ export default {
     async setup(lat, lon) {
       this.$refs.card.show();
       this.dcIndex = await this.newDataCenter(lat, lon);
+      this.lat = Math.round(lat * 1000) / 1000;
+      this.lon = Math.round(lon * 1000) / 1000;
       this.name = this.dc?.name || '';
       this.numClusters = this.dc?.numClusters || 1;
       this.solarArea = this.dc?.solarArea || 0;
@@ -124,6 +121,7 @@ export default {
 <style scoped lang="stylus">
 form
   padding: 1rem
+  padding-top: 0
   display: grid
   grid-gap: 5px
   grid-template-columns: 50% 50%
@@ -165,5 +163,11 @@ form input:not(.editable)
 
 .save-btn
   grid-column: 2 / 3 !important
+
+.coords
+  margin-bottom: 5px
+  margin-left: 15px
+  color: rgba(0,0,0, 0.3)
+  font-size: 0.7rem
 
 </style>
