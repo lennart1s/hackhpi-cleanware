@@ -34,7 +34,10 @@
         @click="saveChanges()"
       />
     </form>
-    <Map />
+    <Map
+      @dcCreated="dcCreated"
+      @dcClicked="dcClicked"
+    />
   </div>
 </template>
 
@@ -61,6 +64,12 @@ export default {
   },
   methods: {
     ...mapActions(['saveDataCenters', 'updateDataCenter', 'loadDataCenters']),
+    dcCreated(dc) {
+      console.log('dcCreated', dc);
+    },
+    dcClicked(n) {
+      console.log('dcClicked', n);
+    },
     saveChanges() {
       this.dataCenter = {
         name: this.$refs.dcName.value,

@@ -17,7 +17,9 @@ export default {
   methods: {
  addDc(long, lat, n) {
    const that = this;
+    that.$emit('dcCreated', { long, lat, n });
   this.destinationCities.push({
+    n,
     id: `dc${n}`,
     title: `DataCenter ${n}`,
     geometry: { type: "Point", coordinates: [long, lat] }
@@ -41,7 +43,6 @@ export default {
       }
     }));
   }
-
     // this.lineSeries.data.setAll(this.lineSeriesData);
   });
 }
@@ -185,7 +186,7 @@ this.destinationSeries.bullets.push(function () {
   });
 
   circle.events.on("click", function (e) {
-    console.log(e.target);
+    that.$emit('dcClicked', e.target.dataItem.dataContext.n);
     // selectOrigin(e.target.dataItem.get("id"));
   });
 
@@ -223,7 +224,7 @@ var plane = () => am5.Picture.new(root, {
 
 function sendRandPack() {
   // console.log(this.lineSeriesData);
-  const di = this.lineSeriesData[Math.floor(Math.random()*this.lineSeriesData.length)];
+  const di = that.lineSeriesData[Math.floor(Math.random()*that.lineSeriesData.length)];
   planeSeries.bullets.push(function () {
         var container = am5.Container.new(root, {});
         container.children.push(plane());
