@@ -34,11 +34,12 @@
         @click="saveChanges()"
       />
     </form>
-
+    <Map />
   </div>
 </template>
 
 <script>
+import Map from '@/components/Map.vue';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -47,6 +48,7 @@ export default {
     dataCenter: undefined,
   }),
   components: {
+    Map,
   },
   computed: {
     ...mapGetters(['dataCenters']),
