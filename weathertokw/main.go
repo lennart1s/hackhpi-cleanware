@@ -19,9 +19,8 @@ type WeatherHandler struct {
 }
 
 type Response struct {
-	StartTime     int64     `json:"startime"`
-	KilowattsSun  []float64 `json:"kwSun"`
-	KilowattsWind []float64 `json:"kwWind"`
+	StartTime int64     `json:"startime"`
+	Kilowatts []float64 `json:"kw"`
 }
 
 type HTTPError struct {
@@ -172,7 +171,7 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	responseTime := time.Now().Unix()
 
-	kilowatswind := make([]float64, val*24)
+	kw := make([]float64, val*24)
 	l1, _ := strconv.ParseFloat(requestData.Lat, 64)
 	l2, _ := strconv.ParseFloat(requestData.Long, 64)
 
@@ -182,13 +181,12 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	turbines, _ := strconv.Atoi(requestData.Turbines)
 
 	for i := 0; i < val*24; i++ {
-		kilowatswind[i] = math.Abs(wh.rng.NormFloat64()*math.Sqrt(sigma)+mu) * float64(turbines)
+		kw[i] = math.Abs(wh.rng.NormFloat64()*math.Sqrt(sigma)+mu)*float64(turbines) + responseData.Outputs.Ac[i]
 	}
 
 	json.NewEncoder(w).Encode(Response{
-		StartTime:     responseTime - (responseTime % (60 * 60)),
-		KilowattsSun:  responseData.Outputs.Ac[:val*24],
-		KilowattsWind: kilowatswind,
+		StartTime: responseTime - (responseTime % (60 * 60)),
+		Kilowatts: kw,
 	})
 }
 
