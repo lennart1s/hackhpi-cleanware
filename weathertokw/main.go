@@ -185,7 +185,7 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(Response{
-		StartTime: responseTime - (responseTime % (60 * 60)),
+		StartTime: responseTime - (responseTime % (60 * 60 * 24)),
 		Kilowatts: kw,
 	})
 }
