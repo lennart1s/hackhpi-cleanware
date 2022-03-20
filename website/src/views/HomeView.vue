@@ -36,10 +36,11 @@ export default {
   },
   methods: {
     ...mapMutations(['setTime']),
-    ...mapActions(['getWeatherForDataCenter']),
-    handleRun() {
+    ...mapActions(['getWeatherForDataCenter', 'getStatus']),
+    async handleRun() {
       console.log('run');
       this.setTime(this.time + 1);
+      await this.getStatus();
     },
     async handleMapCreation({ long, lat, n }) {
       // console.log(long, lat, n);
