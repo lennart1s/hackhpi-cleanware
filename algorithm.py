@@ -1,21 +1,20 @@
 import random
-from xml.dom import NoModificationAllowedErr
+import json
+
+
+
 
 #
 clusters = []
 
 moveCost = 10
-taskFactor = 1
+taskFactor = 0.27
 
 class Cluster:
 
-    def __init__(self, clusterId, tasks = None):
-        if tasks:
-            self.tasks = tasks
-        else:
-            self.tasks = []
-            for i in range(5):
-                self.tasks.append(random.randint(1,20))
+    def __init__(self, clusterId, tasks, racks):
+        self.tasks = tasks
+        self.racks = racks
         self.energy = []
         for j in range(12):
             self.energy.append(random.randint(50,80))
@@ -47,6 +46,9 @@ class Cluster:
             sumTasks += self.tasks[i]
         self.tasks = self.tasks[:lastUsed + 1]
         return res
+    
+    def possibleUsage(self, task = 0):
+        return sum(self.tasks) + task <= self.racks * 100
         
 
 
@@ -61,10 +63,6 @@ def algorithm():
     print(overflowTasks)
     for overflowTask in overflowTasks:
         findBestFittingCluster(overflowTask)
-    
-    for cluster in clusters:
-        print(cluster.tasks)
-        
 
      
 
@@ -72,38 +70,41 @@ def findBestFittingCluster(task):
     bestFittingCluster = -1
     overflowAddition = 99999999999
     for i in range(len(clusters)):
-        print(task[1])
-        print(i)
         if clusters[i].clusterId == task[1]:
             additional = 0
         else:
             additional = moveCost
-        if overflowAddition - additional > clusters[i].overflowPower(task[0]) - clusters[i].overflowPower():
+        if overflowAddition - additional > clusters[i].overflowPower(task[0]) - clusters[i].overflowPower() and clusters[i].possibleUsage(task[0]):
             overflowAddition = clusters[i].overflowPower(task[0]) - clusters[i].overflowPower()
             bestFittingCluster = i
-            if additional == 0:
-                print('movefree')
     clusters[bestFittingCluster].tasks.append(task[0])
-    print(clusters[bestFittingCluster].tasks)
         
 
-def main():
+def main2():
     s = 0
-    clusters.append(Cluster(0))
+    clusters.append(Cluster(0, [9, 10, 12, 19], 1))
     s += clusters[0].overflowPower()
-    clusters.append(Cluster(1))
+    clusters.append(Cluster(1, [4, 5, 10, 11, 17, 20], 2))
     s += clusters[1].overflowPower()
-    clusters.append(Cluster(2))
+    clusters.append(Cluster(2, [1, 6, 11, 17, 20], 1))
     s += clusters[2].overflowPower()
     print(s)
     algorithm()
     s2 = 0
     for i in range(3):
         s2 += clusters[i].overflowPower()
+        print(clusters[i].tasks)
     print(s2)
     if s2 != 0:
         print(s/s2)
     else:
         print('perfect')
 
+
+def main():
+    with open('data_center.json') as json_file:
+        jsonCluster = json.load(json_file)
+    for cluster in jsonCluster:
+        clusters.append(Cluster(cluster['id'], cluster['tasks'], cluster['racks']))
+    algorithm()
 main()
