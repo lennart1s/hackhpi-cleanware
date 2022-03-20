@@ -1,6 +1,6 @@
 <template>
   <CardOverlay ref="card"
-    :ShowOnMount="true">
+    :ShowOnMount="false">
     <form>
       <label for="name">
         <input ref="name" type="text" class="editable" v-model="name"
@@ -8,7 +8,7 @@
         />
       </label>
       <label for="numClusters">
-        Clusters:
+        Racks:
         <input ref="numClusters" type="number" v-model="numClusters" />
       </label>
       <label for="solarArea">
@@ -77,6 +77,7 @@ export default {
           numTurbines: this.numTurbines,
           lat: this.lat,
           lon: this.lon,
+          tasks: this.dc.tasks,
         },
         index: this.dcIndex,
       });
@@ -90,13 +91,22 @@ export default {
       this.saveDataCenters();
       this.$refs.card.hide();
     },
-    async setup() {
+    async setup(lat, lon) {
       this.$refs.card.show();
-      this.dcIndex = await this.newDataCenter(69, 420);
+      this.dcIndex = await this.newDataCenter(lat, lon);
       this.name = this.dc?.name || '';
       this.numClusters = this.dc?.numClusters || 1;
       this.solarArea = this.dc?.solarArea || 0;
       this.numTurbines = this.dc?.numTurbines || 0;
+    },
+    show(i) {
+      this.dcIndex = -1;
+      this.dcIndex = i;
+      this.name = this.dc?.name || '';
+      this.numClusters = this.dc?.numClusters || 1;
+      this.solarArea = this.dc?.solarArea || 0;
+      this.numTurbines = this.dc?.numTurbines || 0;
+      this.$refs.card.show();
     },
   },
   computed: {
@@ -106,7 +116,7 @@ export default {
     },
   },
   mounted() {
-    this.setup();
+    // this.setup();
   },
 };
 </script>

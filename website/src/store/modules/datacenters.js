@@ -19,7 +19,7 @@ export default {
   },
   actions: {
     async newDataCenter({ commit, dispatch, state }, { lat, lon }) {
-      let maxLblIndex = 0;
+      /* let maxLblIndex = 0;
       for (let i = 0; i < state.dataCenters.length; i += 1) {
         if (state.dataCenters[i].name.startsWith('Unnamed ')) {
           const lblIndex = Number.parseInt(state.dataCenters[i].name.replace('Unnamed ', ''), 10);
@@ -27,10 +27,10 @@ export default {
             maxLblIndex = lblIndex;
           }
         }
-      }
+      } */
 
       const dc = {
-        name: `Unnamed ${maxLblIndex + 1}`,
+        name: `DataCenter ${state.dataCenters.length + 1}`,
         numClusters: 1,
         solarArea: 0,
         numTurbines: 0,
@@ -42,9 +42,9 @@ export default {
       dispatch('saveDataCenters');
       return state.dataCenters.length - 1;
     },
-    saveDataCenters({ state }) {
+    /* saveDataCenters({ state }) {
       sessionStorage.setItem('dataCenters', JSON.stringify(state.dataCenters));
-    },
+    }, */
     loadDataCenters({ state }) {
       const data = sessionStorage.getItem('dataCenters');
       if (data) {

@@ -1,19 +1,19 @@
 <template>
   <div>
-    <nav>
+    <!--<nav>
       <GlobalNavigation />
-    </nav>
+    </nav>-->
     <router-view/>
   </div>
 </template>
 
 <script>
-import GlobalNavigation from '@/components/GlobalNavigation.vue';
+// import GlobalNavigation from '@/components/GlobalNavigation.vue';
 import { mapActions } from 'vuex';
 
 export default {
   components: {
-    GlobalNavigation,
+    // GlobalNavigation,
   },
   methods: {
     ...mapActions(['loadDataCenters']),

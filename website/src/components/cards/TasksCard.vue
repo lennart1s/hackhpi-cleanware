@@ -53,6 +53,7 @@ export default {
     ...mapMutations(['setDataCenter']),
     ...mapActions(['saveDataCenters']),
     show() {
+      this.tasks = this.dc.tasks;
       this.$refs.card.show();
     },
     async addNewTask() {
@@ -97,6 +98,7 @@ export default {
     if (!this.dc.tasks) {
       this.dc.tasks = [];
     }
+    this.tasks = this.dc.tasks;
   },
 };
 </script>
