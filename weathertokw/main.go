@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -13,12 +15,13 @@ import (
 var api_key string = os.Getenv("api_key")
 
 type WeatherHandler struct {
-	Test int
+	rng *rand.Rand
 }
 
 type Response struct {
-	StartTime int64     `json:"startime"`
-	Kilowatts []float64 `json:"kw"`
+	StartTime     int64     `json:"startime"`
+	KilowattsSun  []float64 `json:"kwSun"`
+	KilowattsWind []float64 `json:"kwWind"`
 }
 
 type HTTPError struct {
@@ -80,6 +83,7 @@ type Request struct {
 	Lat      string `json:"lat"`
 	Long     string `json:"long"`
 	Capacity string `json:"capacity"`
+	Turbines string `json:"turbines"`
 }
 
 func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -160,7 +164,6 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	days := r.URL.Query().Get("days")
 	val, err := strconv.Atoi(days)
-	fmt.Print("days", days)
 
 	// set default in case of error
 	if days == "" || err != nil || val < 0 {
@@ -169,13 +172,29 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	responseTime := time.Now().Unix()
 
+	kilowatswind := make([]float64, val*24)
+	l1, _ := strconv.ParseFloat(requestData.Lat, 64)
+	l2, _ := strconv.ParseFloat(requestData.Long, 64)
+
+	mu := math.Abs(l1 - l2)
+	sigma := math.Max(l1, l2) / math.Min(l1, l2)
+	sigma = sigma * sigma
+	turbines, _ := strconv.Atoi(requestData.Turbines)
+
+	for i := 0; i < val*24; i++ {
+		kilowatswind[i] = math.Abs(wh.rng.NormFloat64()*math.Sqrt(sigma)+mu) * float64(turbines)
+	}
+
 	json.NewEncoder(w).Encode(Response{
-		StartTime: responseTime - (responseTime % (60 * 60)),
-		Kilowatts: responseData.Outputs.Ac[:val*24],
+		StartTime:     responseTime - (responseTime % (60 * 60)),
+		KilowattsSun:  responseData.Outputs.Ac[:val*24],
+		KilowattsWind: kilowatswind,
 	})
 }
 
 func main() {
-	http.Handle("/", &WeatherHandler{})
+	http.Handle("/", &WeatherHandler{
+		rand.New(rand.NewSource(time.Now().Unix())),
+	})
 	http.ListenAndServe(":8000", nil)
 }
