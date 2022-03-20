@@ -34,11 +34,15 @@
         @click="saveChanges()"
       />
     </form>
-
+    <Map
+      @dcCreated="dcCreated"
+      @dcClicked="dcClicked"
+    />
   </div>
 </template>
 
 <script>
+import Map from '@/components/Map.vue';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -47,6 +51,7 @@ export default {
     dataCenter: undefined,
   }),
   components: {
+    Map,
   },
   computed: {
     ...mapGetters(['dataCenters']),
@@ -59,6 +64,12 @@ export default {
   },
   methods: {
     ...mapActions(['saveDataCenters', 'updateDataCenter', 'loadDataCenters']),
+    dcCreated(dc) {
+      console.log('dcCreated', dc);
+    },
+    dcClicked(n) {
+      console.log('dcClicked', n);
+    },
     saveChanges() {
       this.dataCenter = {
         name: this.$refs.dcName.value,
