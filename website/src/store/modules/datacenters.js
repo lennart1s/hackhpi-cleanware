@@ -79,8 +79,8 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: `${dc.lat}${dc.lon}`,
-          racks: dc.numClusters,
+          datacenter: `${lat}${long}`,
+          racks: `${dc.numClusters}`,
           kw: data.kw,
         }),
       });

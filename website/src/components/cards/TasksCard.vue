@@ -25,7 +25,7 @@
       </form>
       <div class="list">
         <div v-for="t, i of tasks" :key="i" class="task">
-          {{ i + 1 }}. &nbsp; {{ t.cpup }} <span><button @click="removeTask(i)">x</button></span>
+          {{ i + 1 }}. &nbsp; {{ t }} <span><button @click="removeTask(i)">x</button></span>
         </div>
       </div>
     </div>
@@ -54,6 +54,9 @@ export default {
     ...mapActions(['saveDataCenters', 'addTask']),
     show() {
       this.tasks = this.dc.tasks;
+      if (!this.dc.tasks) {
+        this.dc.tasks = [];
+      }
       this.$refs.card.show();
     },
     async addNewTask() {
