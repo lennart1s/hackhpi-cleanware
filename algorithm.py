@@ -13,6 +13,7 @@ taskFactor = 0.27
 class Cluster:
 
     def __init__(self, clusterId, tasks, racks):
+        self.movedTasks = 0
         self.tasks = tasks
         self.racks = racks
         self.energy = []
@@ -78,9 +79,11 @@ def findBestFittingCluster(task):
             overflowAddition = clusters[i].overflowPower(task[0]) - clusters[i].overflowPower()
             bestFittingCluster = i
     clusters[bestFittingCluster].tasks.append(task[0])
+    if clusters[bestFittingCluster].clusterId != task[1]:
+        clusters[bestFittingCluster].movedTasks += 1
         
 
-def main2():
+def testing():
     s = 0
     clusters.append(Cluster(0, [9, 10, 12, 19], 1))
     s += clusters[0].overflowPower()
@@ -107,4 +110,16 @@ def main():
     for cluster in jsonCluster:
         clusters.append(Cluster(cluster['id'], cluster['tasks'], cluster['racks']))
     algorithm()
+    result = []
+    for cluster in clusters:
+        result.append({'id':cluster.clusterId,
+        'tasks':cluster.tasks,
+        'racks':cluster.racks,
+        'renewableEnergyGenerated':cluster.energy[0],
+        'energyUsed':sum(cluster.tasks)*taskFactor,
+        'energyOverflowNext12h':cluster.overflowPower(),
+        'movedTasks':cluster.movedTasks
+        })
+    print(result)
+
 main()
