@@ -7,15 +7,15 @@ export default {
     dataCenter: (state) => (index) => state.dataCenters[index],
   },
   mutations: {
-    setDC(state, dc, index) {
-      state.dataCenters[index] = dc;
+    setDataCenter(state, { dataCenter, index }) {
+      state.dataCenters[index] = dataCenter;
     },
-    addDC(state, dc) {
+    addDataCenter(state, dc) {
       state.dataCenters.push(dc);
     },
   },
   actions: {
-    newDataCenter({ commit, dispatch, state }) {
+    async newDataCenter({ commit, dispatch, state }, { lat, lon }) {
       let maxLblIndex = 0;
       for (let i = 0; i < state.dataCenters.length; i += 1) {
         if (state.dataCenters[i].name.startsWith('Unnamed ')) {
@@ -26,13 +26,18 @@ export default {
         }
       }
 
-      commit('addDC', {
+      const dc = {
         name: `Unnamed ${maxLblIndex + 1}`,
         numClusters: 1,
-        lat: 0,
-        long: 0,
-      }, 1);
+        solarArea: 0,
+        numTurbines: 0,
+        lat: lat || 0,
+        lon: lon || 0,
+      };
+
+      commit('addDataCenter', dc);
       dispatch('saveDataCenters');
+      return state.dataCenters.length - 1;
     },
     saveDataCenters({ state }) {
       sessionStorage.setItem('dataCenters', JSON.stringify(state.dataCenters));
