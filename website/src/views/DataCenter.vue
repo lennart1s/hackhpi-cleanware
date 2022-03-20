@@ -68,6 +68,7 @@ export default {
       };
 
       this.updateDataCenter({ i: this.$route.params.dcIndex, dc: this.dataCenter });
+      this.$router.go(this.$router.currentRoute);
     },
     init() {
       this.dataCenter = this.dataCenters[this.$route.params.dcIndex];
