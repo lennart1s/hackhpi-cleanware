@@ -40,9 +40,9 @@ class Algo:
 
         result = []
         for cluster in self.clusters:
-            result.append({'name': cluster.clusterId,
+            result.append({'name': str(cluster.clusterId),
                            'tasks': cluster.tasks,
-                           'racks': cluster.racks,
+                           'racks': int(cluster.racks),
                            'rewgen': cluster.energy[0],
                            'rewused': sum(cluster.tasks)*taskFactor,
                            'overflow': cluster.overflowPower(),
@@ -58,7 +58,7 @@ class Algo:
                 additional = 0
             else:
                 additional = moveCost
-            if overflowAddition - additional > self.clusters[i].overflowPower(task[0]) - self.clusters[i].overflowPower() and clusters[i].possibleUsage(task[0]):
+            if overflowAddition - additional > self.clusters[i].overflowPower(task[0]) - self.clusters[i].overflowPower() and self.clusters[i].possibleUsage(task[0]):
                 overflowAddition = self.clusters[i].overflowPower(
                     task[0]) - self.clusters[i].overflowPower()
                 bestFittingCluster = i

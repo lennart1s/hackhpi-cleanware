@@ -1,4 +1,5 @@
-import string
+
+from pydantic import BaseModel
 from typing import Optional, List
 from flask import Flask, request
 from pydantic import BaseModel
@@ -18,7 +19,7 @@ class DataCenter(BaseModel):
     rew_generated: float
     rew_used: float
     energy_overflow: float
-    moved_tasks: float
+    moved_tasks: int
 
 
 class Status(BaseModel):
@@ -31,14 +32,19 @@ class DataCenterRequest(BaseModel):
     racks: int
 
 
-@app.route("/dc/<datacenter>/task/<int:usage>", methods=["PUT", "DELETE"])
+class TaskRequest(BaseModel):
+    datacenter: str
+    usage: int
+
+
+@app.route("/dc/task", methods=["PUT", "DELETE"])
 @validate()
-def create_task(datacenter: str, usage: int):
+def create_task(body: TaskRequest):
 
     if request.method == "DELETE":
-        ret = algo.delete_task(datacenter, usage)
+        ret = algo.delete_task(body.datacenter, body.usage)
     else:
-        ret = algo.add_task(datacenter, usage)
+        ret = algo.add_task(body.datacenter, body.usage)
 
     return json.dumps({'success': ret}), 200, {'ContentType': 'application/json'}
 
@@ -60,7 +66,7 @@ def status():
 
     for dc in dcs:
         dc_objects.append(
-            DataCenter(
+            dict(
                 name=dc["name"],
                 tasks=dc["tasks"],
                 racks=dc["racks"],
@@ -71,4 +77,4 @@ def status():
             )
         )
 
-    return Status(dc_objects)
+    return Status(datacenters=dc_objects)
