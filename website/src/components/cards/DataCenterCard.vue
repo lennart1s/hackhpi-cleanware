@@ -1,5 +1,6 @@
 <template>
-  <CardOverlay ref="card">
+  <CardOverlay ref="card"
+    :ShowOnMount="true">
     <form>
       <label for="name">
         <input ref="name" type="text" v-model="name"/>
@@ -24,17 +25,23 @@
         @click="saveDataCenter()"
       />
     </form>
+    <button @click="$refs.tasksCard.show()">Show Tasks</button>
+    <TasksCard ref="tasksCard"
+      :dcIndex="dcIndex"
+    />
   </CardOverlay>
 </template>
 
 <script>
-import CardOverlay from '@/components/cards/CardOverlay.vue';
 import { mapGetters, mapActions, mapMutations } from 'vuex';
+import CardOverlay from '@/components/cards/CardOverlay.vue';
+import TasksCard from '@/components/cards/TasksCard.vue';
 
 export default {
   name: 'DataCenterCard',
   components: {
     CardOverlay,
+    TasksCard,
   },
   props: {
     lat: {
@@ -47,7 +54,7 @@ export default {
     },
   },
   data: () => ({
-    dcIndex: -1,
+    dcIndex: 0,
     name: '',
     numClusters: 0,
     solarArea: 0,

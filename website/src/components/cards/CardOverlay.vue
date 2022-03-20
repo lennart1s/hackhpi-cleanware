@@ -1,6 +1,6 @@
 <template>
   <modal class="wrapper" name="wrapper"
-    :draggable="true"
+    :draggable="Draggable"
     transition="none"
     classes="wrapper"
     width="35%"
@@ -8,7 +8,7 @@
     :shiftX="X"
     :shiftY="Y"
     @closed="$emit('closed')"
-    :clickToClose="false"
+    :clickToClose="true"
   >
     <slot></slot>
   </modal>
@@ -18,6 +18,14 @@
 export default {
   name: 'CardModal',
   props: {
+    ShowOnMount: {
+      Type: Boolean,
+      default: false,
+    },
+    Draggable: {
+      Type: Boolean,
+      default: true,
+    },
     X: {
       Type: Number,
       default: 0.5,
@@ -40,7 +48,9 @@ export default {
   computed: {
   },
   mounted() {
-    this.show();
+    if (this.ShowOnMount) {
+      this.show();
+    }
   },
 };
 </script>

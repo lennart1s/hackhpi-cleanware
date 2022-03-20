@@ -8,6 +8,7 @@ export default {
   },
   mutations: {
     setDataCenter(state, { dataCenter, index }) {
+      console.log(dataCenter);
       state.dataCenters[index] = dataCenter;
     },
     addDataCenter(state, dc) {
