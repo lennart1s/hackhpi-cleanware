@@ -3,7 +3,9 @@
     :ShowOnMount="true">
     <form>
       <label for="name">
-        <input ref="name" type="text" v-model="name"/>
+        <input ref="name" type="text" class="editable" v-model="name"
+          style="grid-column: 1 / 4"
+        />
       </label>
       <label for="numClusters">
         Clusters:
@@ -18,10 +20,10 @@
         Turbines:
         <input ref="numTurbines" type="number" v-model="numTurbines" />
       </label>
-      <input type="button" value="Delete"
+      <input class="del-btn" type="button" value="Delete"
         @click="deleteDataCenter()"
       />
-      <input type="button" value="Save"
+      <input class="save-btn" type="button" value="Save"
         @click="saveDataCenter()"
       />
     </form>
@@ -62,7 +64,7 @@ export default {
   }),
   methods: {
     ...mapActions(['newDataCenter', 'saveDataCenters']),
-    ...mapMutations(['setDataCenter']),
+    ...mapMutations(['setDataCenter', 'removeDataCenter']),
     async saveDataCenter() {
       if (this.dcIndex < 0) {
         return;
@@ -84,7 +86,17 @@ export default {
       this.$refs.card.hide();
     },
     deleteDataCenter() {
+      this.removeDataCenter(this.dcIndex);
+      this.saveDataCenters();
       this.$refs.card.hide();
+    },
+    async setup() {
+      this.$refs.card.show();
+      this.dcIndex = await this.newDataCenter(69, 420);
+      this.name = this.dc?.name || '';
+      this.numClusters = this.dc?.numClusters || 1;
+      this.solarArea = this.dc?.solarArea || 0;
+      this.numTurbines = this.dc?.numTurbines || 0;
     },
   },
   computed: {
@@ -93,17 +105,55 @@ export default {
       return this.dataCenter(this.dcIndex);
     },
   },
-  async mounted() {
-    this.dcIndex = await this.newDataCenter(69, 420);
-    this.name = this.dc?.name || '';
-    this.numClusters = this.dc?.numClusters || 1;
-    this.solarArea = this.dc?.solarArea || 0;
-    this.numTurbines = this.dc?.numTurbines || 0;
+  mounted() {
+    this.setup();
   },
 };
 </script>
 
 <style scoped lang="stylus">
 form
+  padding: 1rem
   display: grid
+  grid-gap: 5px
+  grid-template-columns: 50% 50%
+
+input.editable
+  padding: 5px
+  font-size: 1.2rem
+  border: 1px solid rgba(0, 0, 0, 0.0)
+  &:hover
+    padding: 5px
+    border: 1px solid rgba(0, 0, 0, 0.2)
+
+form label
+  grid-column: 1 / 3
+  width: 100%
+  display: grid
+  grid-template-columns: 50% 40% 10%
+
+form input:not(.editable)
+  grid-column: 2 / 3
+  margin-left: auto
+  width: 40%
+
+.del-btn,.save-btn
+  width: 80px !important
+  margin-inline: auto
+  margin-top: 12px
+  background-color: transparent
+  font-size: 0.95rem
+  border: 1px solid black
+  border-radius: 2px
+  padding-block: 3px
+  cursor: pointer
+  &:hover
+    background-color: rgba(0, 0, 0, 0.05)
+
+.del-btn
+  grid-column: 1 / 2 !important
+
+.save-btn
+  grid-column: 2 / 3 !important
+
 </style>

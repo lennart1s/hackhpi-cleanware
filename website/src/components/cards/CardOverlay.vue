@@ -3,8 +3,8 @@
     :draggable="Draggable"
     transition="none"
     classes="wrapper"
-    width="35%"
-    height="60%"
+    :width="Width"
+    :height="Height"
     :shiftX="X"
     :shiftY="Y"
     @closed="$emit('closed')"
@@ -33,6 +33,14 @@ export default {
     Y: {
       Type: Number,
       default: 0.5,
+    },
+    Width: {
+      Type: String,
+      default: '300px',
+    },
+    Height: {
+      Type: String,
+      default: '250px',
     },
   },
   components: {

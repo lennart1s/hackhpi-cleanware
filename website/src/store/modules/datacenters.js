@@ -8,11 +8,13 @@ export default {
   },
   mutations: {
     setDataCenter(state, { dataCenter, index }) {
-      console.log(dataCenter);
       state.dataCenters[index] = dataCenter;
     },
     addDataCenter(state, dc) {
       state.dataCenters.push(dc);
+    },
+    removeDataCenter(state, index) {
+      state.dataCenters.splice(index, 1);
     },
   },
   actions: {
