@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      }
+
+      #chartdiv {
+        width: 100%;
+        height: 600px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="chartdiv"></div>
+    <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+    <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+    <script>
+var root = am5.Root.new("chartdiv");
+
+// Set themes
+// https://www.amcharts.com/docs/v5/concepts/themes/
+root.setThemes([
+  am5themes_Animated.new(root)
+]);
+
+// Create the map chart
+// https://www.amcharts.com/docs/v5/charts/map-chart/
+var chart = root.container.children.push(
+  am5map.MapChart.new(root, {
+    panX: "translateX",
+    panY: "translateY",
+    projection: am5map.geoMercator()
+  })
+);
+
+// Add labels and controls
+var cont = chart.children.push(
+  am5.Container.new(root, {
+    layout: root.horizontalLayout,
+    x: 20,
+    y: 40
+  })
+);
+
+cont.children.push(
+  am5.Label.new(root, {
+    centerY: am5.p50,
+    text: "Map"
+  })
+);
+
+var mode = chart.children.push(
+  am5.Container.new(root, {
+    layout: root.horizontalLayout,
+    x: 20,
+    y: 80
+  })
+)
+
+mode.children.push(
+  am5.Label.new(root, {
+    centerY: am5.p50,
+    text: "Inspect"
+  })
+);
+
+var addMode = false;
+
+var switchButton2 = mode.children.push(
+  am5.Button.new(root, {
+    themeTags: ["switch"],
+    centerY: am5.p50,
+    icon: am5.Circle.new(root, {
+      themeTags: ["icon"]
+    })
+  })
+);
+
+mode.children.push(
+  am5.Label.new(root, {
+    centerY: am5.p50,
+    text: "Add"
+  })
+);
+
+var switchButton = cont.children.push(
+  am5.Button.new(root, {
+    themeTags: ["switch"],
+    centerY: am5.p50,
+    icon: am5.Circle.new(root, {
+      themeTags: ["icon"]
+    })
+  })
+);
+
+
+cont.children.push(
+  am5.Label.new(root, {
+    centerY: am5.p50,
+    text: "Globe"
+  })
+);
+
+switchButton.on("active", function () {
+  if (!switchButton.get("active")) {
+    chart.set("projection", am5map.geoMercator());
+    chart.set("panX", "translateX");
+    chart.set("panY", "translateY");
+  } else {
+    chart.set("projection", am5map.geoOrthographic());
+    chart.set("panX", "rotateX");
+    chart.set("panY", "rotateY");
+  }
+});
+
+// Create main polygon series for countries
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+var polygonSeries = chart.series.push(
+  am5map.MapPolygonSeries.new(root, {
+    geoJSON: am5geodata_worldLow
+  })
+);
+
+var graticuleSeries = chart.series.push(am5map.GraticuleSeries.new(root, {}));
+graticuleSeries.mapLines.template.setAll({
+  stroke: root.interfaceColors.get("alternativeBackground"),
+  strokeOpacity: 0.08
+});
+
+// Create line series for trajectory lines
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-line-series/
+var lineSeries = chart.series.push(am5map.MapLineSeries.new(root, {}));
+lineSeries.mapLines.template.setAll({
+  stroke: root.interfaceColors.get("alternativeBackground"),
+  strokeOpacity: 0.6
+});
+
+// Create point series for markers
+// https://www.amcharts.com/docs/v5/charts/map-chart/map-point-series/
+var originSeries = chart.series.push(
+  am5map.MapPointSeries.new(root, { idField: "id" })
+);
+
+originSeries.bullets.push(function () {
+  var circle = am5.Circle.new(root, {
+    radius: 7,
+    tooltipText: "{title} (Click me!)",
+    cursorOverStyle: "pointer",
+    tooltipY: 0,
+    fill: am5.color(0xffba00),
+    stroke: root.interfaceColors.get("background"),
+    strokeWidth: 2
+  });
+
+  circle.events.on("click", function (e) {
+    selectOrigin(e.target.dataItem.get("id"));
+  });
+  return am5.Bullet.new(root, {
+    sprite: circle
+  });
+});
+
+// destination series
+var destinationSeries = chart.series.push(am5map.MapPointSeries.new(root, {}));
+
+destinationSeries.bullets.push(function () {
+  var circle = am5.Circle.new(root, {
+    radius: 5,
+    tooltipText: "{title}",
+    tooltipY: 0,
+    fill: am5.color(0xffba00),
+    stroke: root.interfaceColors.get("background"),
+    strokeWidth: 2
+  });
+
+  return am5.Bullet.new(root, {
+    sprite: circle
+  });
+});
+
+// var button = root.container.children.push(
+//   am5.Button.new(root, {
+//     x: am5.p50,
+//     y: 60,
+//     centerX: am5.p50,
+//     label: am5.Label.new(root, {
+//       text: "Add new",
+//       centerY: am5.p50
+//     }),
+//   })
+// );
+
+var originCities = [
+  {
+    id: "london",
+    title: "London",
+    destinations: [
+      "vilnius",
+      "reykjavik",
+      "lisbon",
+      "moscow",
+      "belgrade",
+      "ljublana",
+      "madrid",
+      "stockholm",
+      "bern",
+      "kiev",
+      "new york"
+    ],
+    geometry: { type: "Point", coordinates: [-0.1262, 51.5002] },
+    zoomLevel: 2.74,
+    zoomPoint: { longitude: -20.1341, latitude: 49.1712 }
+  },
+  {
+    id: "vilnius",
+    title: "Vilnius",
+    destinations: [
+      "london",
+      "brussels",
+      "prague",
+      "athens",
+      "dublin",
+      "oslo",
+      "moscow",
+      "bratislava",
+      "belgrade",
+      "madrid"
+    ],
+    geometry: { type: "Point", coordinates: [25.2799, 54.6896] },
+    zoomLevel: 4.92,
+    zoomPoint: { longitude: 15.4492, latitude: 50.2631 }
+  }
+];
+
+var destinationCities = [
+  {
+    id: "prague",
+    title: "Prague",
+    geometry: { type: "Point", coordinates: [14.4205, 50.0878] }
+  },
+  {
+    id: "athens",
+    title: "Athens",
+    geometry: { type: "Point", coordinates: [23.7166, 37.9792] }
+  }
+];
+
+originSeries.data.setAll(originCities);
+destinationSeries.data.setAll(destinationCities);
+
+function addDest(long, lat, title) {
+  destinationCities.push({
+    // id: "brussels",
+    title,
+    geometry: { type: "Point", coordinates: [long, lat] }
+  },);
+  destinationSeries.data.setAll(destinationCities);
+}
+
+// button.events.on("click", function () {
+//   addDest(4.3676, 50.8371);
+// });
+
+var dcs = -1;
+
+chart.events.on("click", function(ev){
+  // $('#tempInfo').html(event.mapObject.infoTitle); // Changes with clicking
+  const { longitude: long, latitude: lat } = chart.invert(ev.point);
+  if (switchButton2.get("active")) {
+    dcs++;
+    addDest(long, lat, `DataCenter ${dcs}`);
+  }
+});
+
+function selectOrigin(id) {
+  currentId = id;
+  var dataItem = originSeries.getDataItemById(id);
+  var dataContext = dataItem.dataContext;
+  chart.zoomToGeoPoint(dataContext.zoomPoint, dataContext.zoomLevel, true);
+
+  var destinations = dataContext.destinations;
+  var lineSeriesData = [];
+  var originLongitude = dataItem.get("longitude");
+  var originLatitude = dataItem.get("latitude");
+
+  // am5.array.each(destinations, function (did) {
+  //   var destinationDataItem = destinationSeries.getDataItemById(did);
+  //   if (!destinationDataItem) {
+  //     destinationDataItem = originSeries.getDataItemById(did);
+  //   }
+  //   lineSeriesData.push({
+  //     geometry: {
+  //       type: "LineString",
+  //       coordinates: [
+  //         [originLongitude, originLatitude],
+  //         [
+  //           destinationDataItem.get("longitude"),
+  //           destinationDataItem.get("latitude")
+  //         ]
+  //       ]
+  //     }
+  //   });
+  // });
+  lineSeries.data.setAll(lineSeriesData);
+}
+
+var currentId = "london";
+
+destinationSeries.events.on("datavalidated", function () {
+  selectOrigin(currentId);
+});
+
+// Make stuff animate on load
+chart.appear(1000, 100);
+    </script>
+  </body>
+</html>
