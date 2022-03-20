@@ -43,10 +43,10 @@ class Algo:
             result.append({ 'name':cluster.clusterId,
                             'tasks':cluster.tasks,
                             'racks':cluster.racks,
-                            'renewableEnergyGenerated':cluster.energy[0],
-                            'energyUsed':sum(cluster.tasks)*taskFactor,
-                            'energyOverflowNext12h':cluster.overflowPower(),
-                            'movedTasks':cluster.movedTasks
+                            'rewgen':cluster.energy[0],
+                            'rewused':sum(cluster.tasks)*taskFactor,
+                            'overflow':cluster.overflowPower(),
+                            'moved':cluster.movedTasks
                         })
             return result
     
