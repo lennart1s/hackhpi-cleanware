@@ -1,15 +1,6 @@
 from typing import List, Any
 
 
-class DataCenterResponse(BaseModel):
-    ident: string
-    lang: float
-    lon: float
-    tasks: List[Task]
-
-    racks: int
-
-
 class Algo:
 
     def __init__(self) -> None:
