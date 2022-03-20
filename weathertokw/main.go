@@ -94,10 +94,10 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(requestData)
 
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(HTTPError{
 			Error: err.Error(), Kind: "decoding incoming request json",
 		})
-		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -105,10 +105,10 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req, err := http.NewRequest("GET", "https://developer.nrel.gov/api/pvwatts/v6.json?", nil)
 
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(HTTPError{
 			Error: err.Error(), Kind: "creating request",
 		})
-		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -130,13 +130,11 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req.URL.RawQuery = query.Encode()
 	resp, err := client.Do(req)
 
-	fmt.Printf("Queries: %s", resp.Request.URL.Path)
-
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(HTTPError{
 			Error: err.Error(), Kind: "sending request",
 		})
-		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -153,10 +151,10 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(resp.Body).Decode(responseData)
 
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(HTTPError{
 			Error: err.Error(), Kind: "decoding json response",
 		})
-		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
@@ -175,7 +173,6 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		StartTime: responseTime - (responseTime % (60 * 60)),
 		Kilowatts: responseData.Outputs.Ac[:val*24],
 	})
-
 }
 
 func main() {
