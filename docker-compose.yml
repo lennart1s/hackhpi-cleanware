@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  webserver:
+    container_name: cleanware_weather
+    build:
+      context: ./weathertokw
+      dockerfile: Dockerfile
+    ports:
+      - 8000:8000
+  mysql:
+    container_name: cleanware_algo
+    build:
+      context: ./algo
+      dockerfile: Dockerfile
+    ports:
+      - 5000:5000
