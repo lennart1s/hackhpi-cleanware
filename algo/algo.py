@@ -58,7 +58,7 @@ class Algo:
                 additional = 0
             else:
                 additional = moveCost
-            if overflowAddition - additional > self.clusters[i].overflowPower(task[0]) - self.clusters[i].overflowPower() and clusters[i].possibleUsage(task[0]):
+            if overflowAddition - additional > self.clusters[i].overflowPower(task[0]) - self.clusters[i].overflowPower() and self.clusters[i].possibleUsage(task[0]):
                 overflowAddition = self.clusters[i].overflowPower(task[0]) - self.clusters[i].overflowPower()
                 bestFittingCluster = i
         self.clusters[bestFittingCluster].tasks.append(task[0])
