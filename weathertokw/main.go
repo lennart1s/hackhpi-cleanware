@@ -86,7 +86,7 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodPost {
-		fmt.Fprint(w, `{"error":"Invalid method, use POST","kind":""}`)
+		fmt.Fprint(w, "{\"error\":\"Invalid method, use POST\",\"kind\":\"\"}\n")
 		return
 	}
 
