@@ -19,8 +19,12 @@ export default {
   },
   actions: {
     async addTask({ dc, task }) {
-      fetch(`http://localhost:5000/dc/${dc}/task/${task}`, {
+      fetch('http://localhost:5000/dc/task', {
         method: 'PUT',
+        body: JSON.stringify({
+          datacenter: dc,
+          usage: task,
+        }),
       });
     },
     async newDataCenter({ commit, dispatch, state }, { lat, lon }) {
@@ -37,8 +41,8 @@ export default {
       const dc = {
         name: `DataCenter ${state.dataCenters.length + 1}`,
         numClusters: 1,
-        solarArea: 0,
-        numTurbines: 0,
+        solarArea: 1,
+        numTurbines: 1,
         lat: lat || 0,
         lon: lon || 0,
       };
@@ -50,8 +54,9 @@ export default {
     /* saveDataCenters({ state }) {
       sessionStorage.setItem('dataCenters', JSON.stringify(state.dataCenters));
     }, */
-    async getWeatherForDataCenter({ state }, i) {
+    async getWeatherForDataCenter({ state }, { i, lat, long }) {
       const dc = state.dataCenters[i];
+      console.log(state, i);
 
       const resp = await fetch('http://localhost:8000/?days=2', {
         method: 'POST',
@@ -59,15 +64,30 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          lat: dc.lat,
-          long: dc.lon,
-          capacity: dc.solarArea,
-          turbines: dc.numTurbines,
+          lat: `${lat}`,
+          long: `${long}`,
+          capacity: `${dc.solarArea}`,
+          turbines: `${dc.numTurbines}`,
         }),
       });
 
       const data = await resp.json();
-      console.log(data);
+
+      const resp2 = await fetch('http://localhost:5000/dc', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: `${dc.lat}${dc.lon}`,
+          racks: dc.numClusters,
+          kw: data.kw,
+        }),
+      });
+
+      const data2 = await resp2.json();
+
+      console.log(data2);
       state.dataCenters[i].weather = data;
     },
     loadDataCenters({ state }) {

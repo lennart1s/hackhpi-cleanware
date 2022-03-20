@@ -43,8 +43,8 @@ export default {
     },
     async handleMapCreation({ long, lat, n }) {
       // console.log(long, lat, n);
-      await this.getWeatherForDataCenter(n - 1);
       this.$refs.dcc.setup(long, lat, n);
+      await this.getWeatherForDataCenter({ i: n - 1, lat, long });
     },
     handleMapClick(n) {
       this.$refs.dcc.show(n - 1);
