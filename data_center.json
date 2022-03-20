@@ -1,59 +1,17 @@
 [
     {
-
-    "Meta":[],
-    "name":"Hong Kong",
-    "Racks":[
-        {"cpu_max":700,
-        "idle":20,
-        "boot_shutdown":30,
-        "cpu_target":0.7,
-        "id":12345}
-    ],
-    "Lon":114.108149,
-    "Lat":22.392559,
-    "Tasks":{
-        "cpu_usage":78,
-        "priority":0.3,
-        "data":5
-    }
-},
+		"id":42,
+		"racks":5,
+		"tasks":[20,50,37,42,63]
+	},
     {
-
-    "Meta":[],
-    "name":"Hamburg",
-    "Racks":[
-        {"cpu_max":700,
-        "idle":20,
-        "boot_shutdown":30,
-        "cpu_target":0.7,
-        "id":0}
-    ],
-    "Lon":9.993682,
-    "Lat":53.551085,
-    "Tasks":{
-        "cpu_usage":50,
-        "priority":0.73,
-        "data":40
-    }
-},
-    {
-
-    "Meta":[],
-    "name":"München",
-    "Racks":[
-        {"cpu_max":700,
-        "idle":20,
-        "boot_shutdown":30,
-        "cpu_target":0.7,
-        "id": 67989}
-    ],
-    "Lon":11.581981,
-    "Lat":48.135125,
-    "Tasks":{
-        "cpu_usage":36,
-        "priority":0.5,
-        "data":20
-    }
-}
+		"id":54,
+		"racks":2,
+		"tasks":[12,4,36,32,62]
+	},
+	{
+		"id":3,
+		"racks":3,
+		"tasks":[23,45,6,5,76,65,13]
+	}
 ]
