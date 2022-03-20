@@ -21,6 +21,11 @@ type Response struct {
 	Kilowatts []float64 `json:"kw"`
 }
 
+type HTTPError struct {
+	Error string `json:"error"`
+	Kind  string `json:"kind"`
+}
+
 type SolarRadiationAPIResponse struct {
 	Inputs struct {
 		Dataset        string `json:"dataset"`
@@ -81,7 +86,7 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if r.Method != http.MethodPost {
-		fmt.Fprint(w, `{"error":"Invalid method, use POST","kind":""`)
+		fmt.Fprint(w, `{"error":"Invalid method, use POST","kind":""}`)
 		return
 	}
 
@@ -89,7 +94,9 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(requestData)
 
 	if err != nil {
-		fmt.Fprint(w, fmt.Errorf(`{"error":"%w","kind":"decoding incoming request json"`, err))
+		json.NewEncoder(w).Encode(HTTPError{
+			Error: err.Error(), Kind: "decoding incoming request json",
+		})
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -98,7 +105,9 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	req, err := http.NewRequest("GET", "https://developer.nrel.gov/api/pvwatts/v6.json?", nil)
 
 	if err != nil {
-		fmt.Fprint(w, fmt.Errorf(`{"error":"%w","kind":"creating request"`, err))
+		json.NewEncoder(w).Encode(HTTPError{
+			Error: err.Error(), Kind: "creating request",
+		})
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -124,7 +133,9 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Queries: %s", resp.Request.URL.Path)
 
 	if err != nil {
-		fmt.Fprint(w, fmt.Errorf(`{"error":"%w","kind":"sending request"`, err))
+		json.NewEncoder(w).Encode(HTTPError{
+			Error: err.Error(), Kind: "sending request",
+		})
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -132,7 +143,9 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if resp.StatusCode != http.StatusOK {
 		bodyBytes, _ := io.ReadAll(resp.Body)
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintf(w, `{"error":"%s","kind":"retrieving data failed"`, string(bodyBytes))
+		json.NewEncoder(w).Encode(HTTPError{
+			Error: string(bodyBytes), Kind: "request to third party data source",
+		})
 		return
 	}
 
@@ -140,7 +153,9 @@ func (wh *WeatherHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	err = json.NewDecoder(resp.Body).Decode(responseData)
 
 	if err != nil {
-		fmt.Fprint(w, fmt.Errorf(`{"error":"%w","kind":"decoding json response"`, err))
+		json.NewEncoder(w).Encode(HTTPError{
+			Error: err.Error(), Kind: "decoding json response",
+		})
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
