@@ -48,7 +48,8 @@ class Algo:
                            'overflow': cluster.overflowPower(),
                            'moved': cluster.movedTasks
                            })
-            return result
+
+        return result
 
     def findBestFittingCluster(self, task):
         bestFittingCluster = -1
