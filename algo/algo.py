@@ -3,7 +3,6 @@ from typing import List, Any
 moveCost = 10
 taskFactor = 0.27
 
-
 class Algo:
     clusters = []
 
