@@ -237,7 +237,7 @@ var plane = () => am5.Picture.new(root, {
     });
 
 function sendRandPack() {
-  console.log(lineSeriesData);
+  // console.log(lineSeriesData);
   const di = lineSeriesData[Math.floor(Math.random()*lineSeriesData.length)];
   planeSeries.bullets.push(function () {
         var container = am5.Container.new(root, {});
@@ -251,16 +251,32 @@ function sendRandPack() {
     });
 
     const dur = 2000;
+    console.log
     planeDataItem.animate({
-        key: "positionOnLine",
+        key: 'positionOnLine',
         to: 1,
         duration: dur*2,
-        loops: 1,
+        loops: Infinity,
         easing: am5.ease.yoyo(am5.ease.linear),
     });
     setTimeout(() => planeDataItem.hide(), dur-500);
 }
 
+var button = root.container.children.push(
+  am5.Button.new(root, {
+    x: am5.p50,
+    y: 60,
+    centerX: am5.p50,
+    label: am5.Label.new(root, {
+      text: "Run cycle",
+      centerY: am5.p50
+    }),
+  })
+);
+
+button.events.on("click", function () {
+  sendRandPack();
+});
 // button.events.on("click", function () {
 //   addDest(4.3676, 50.8371);
 // });
