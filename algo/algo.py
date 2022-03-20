@@ -3,6 +3,7 @@ from typing import List, Any
 moveCost = 10
 taskFactor = 0.27
 
+
 class Algo:
     clusters = []
 
@@ -32,24 +33,24 @@ class Algo:
         overflowTasks = []
         for cluster in self.clusters:
             overflowTasks += cluster.extractOverflowTasks()
-        
-        overflowTasks.sort(key = lambda tup: tup[0], reverse=True)
+
+        overflowTasks.sort(key=lambda tup: tup[0], reverse=True)
         for overflowTask in overflowTasks:
             self.findBestFittingCluster(overflowTask)
-        
+
         result = []
         for cluster in self.clusters:
-            result.append({ 'name':cluster.clusterId,
-                            'tasks':cluster.tasks,
-                            'racks':cluster.racks,
-                            'rewgen':cluster.energy[0],
-                            'rewused':sum(cluster.tasks)*taskFactor,
-                            'overflow':cluster.overflowPower(),
-                            'moved':cluster.movedTasks
-                        })
+            result.append({'name': cluster.clusterId,
+                           'tasks': cluster.tasks,
+                           'racks': cluster.racks,
+                           'rewgen': cluster.energy[0],
+                           'rewused': sum(cluster.tasks)*taskFactor,
+                           'overflow': cluster.overflowPower(),
+                           'moved': cluster.movedTasks
+                           })
             return result
-    
-    def findBestFittingCluster(self,task):
+
+    def findBestFittingCluster(self, task):
         bestFittingCluster = -1
         overflowAddition = 99999999999
         for i in range(len(self.clusters)):
@@ -58,7 +59,8 @@ class Algo:
             else:
                 additional = moveCost
             if overflowAddition - additional > self.clusters[i].overflowPower(task[0]) - self.clusters[i].overflowPower() and clusters[i].possibleUsage(task[0]):
-                overflowAddition = self.clusters[i].overflowPower(task[0]) - self.clusters[i].overflowPower()
+                overflowAddition = self.clusters[i].overflowPower(
+                    task[0]) - self.clusters[i].overflowPower()
                 bestFittingCluster = i
         self.clusters[bestFittingCluster].tasks.append(task[0])
         if self.clusters[bestFittingCluster].clusterId != task[1]:
@@ -74,12 +76,12 @@ class Cluster:
         self.energy = kilowats
         self.clusterId = clusterId
         self.minEnergy = min(self.energy)
-    
+
     def addTask(self, value):
         self.tasks.append(value)
         self.tasks.sort()
         return True
-    
+
     def delTask(self, value):
         try:
             self.tasks.remove(value)
@@ -87,9 +89,8 @@ class Cluster:
             return True
         except:
             return False
-        
-    
-    def overflowPower(self, additional = 0):
+
+    def overflowPower(self, additional=0):
         powerOverflow = 0
         powerUsed = (sum(self.tasks) + additional) * taskFactor
         for powerAvailable in self.energy:
@@ -97,8 +98,6 @@ class Cluster:
                 powerOverflow += powerUsed - powerAvailable
         return powerOverflow
 
-
-    
     def extractOverflowTasks(self):
         sumTasks = 0
         res = []
@@ -111,6 +110,6 @@ class Cluster:
             sumTasks += self.tasks[i]
         self.tasks = self.tasks[:lastUsed + 1]
         return res
-    
-    def possibleUsage(self, task = 0):
+
+    def possibleUsage(self, task=0):
         return sum(self.tasks) + task <= self.racks * 100

@@ -1,0 +1,18 @@
+POST /dc HTTP/1.1 
+Host: localhost:5000
+Content-Type: application/json
+
+{
+    "datacenter" : "test2",
+    "kw":[0,0,0,0,0,0,0,0,0,0,0,0.5],
+    "racks":2
+}
+
+
+###
+PUT /dc/test/task/435 HTTP/1.1 
+Host: localhost:5000
+
+###
+GET /status HTTP/1.1 
+Host: localhost:5000

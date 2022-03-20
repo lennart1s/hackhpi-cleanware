@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from flask import request
 from flask_pydantic import validate
 import json
-from algo.algo import Algo
+from algo import Algo
 
 app = Flask("Cleanware")
 algo = Algo()
@@ -26,11 +26,12 @@ class Status(BaseModel):
 
 
 class DataCenterRequest(BaseModel):
+    datacenter: str
     kw: List[float]
     racks: int
 
 
-@app.route("/<datacenter>/task/<int:usage>", methods=["PUT", "DELETE"])
+@app.route("/dc/<datacenter>/task/<int:usage>", methods=["PUT", "DELETE"])
 @validate()
 def create_task(datacenter: str, usage: int):
 
@@ -42,12 +43,13 @@ def create_task(datacenter: str, usage: int):
     return json.dumps({'success': ret}), 200, {'ContentType': 'application/json'}
 
 
-@app.route("/<datacenter>", methods=["GET"])
+@app.route("/dc", methods=["POST"])
 @validate()
-def add_datacenter(datacenter: str, req: DataCenterRequest):
+def add_datacenter(body: DataCenterRequest):
     algo.add_datacenter(
-        datacenter, req.kw, req.racks
+        body.datacenter, body.kw, body.racks
     )
+    return json.dumps({'success': True}), 200, {'ContentType': 'application/json'}
 
 
 @app.route("/status", methods=["GET"])
