@@ -11,5 +11,11 @@ export default {
     },
   },
   actions: {
+    async getStatus() {
+      const resp = fetch('http://localhost:5000/status');
+      const data = await resp.json();
+
+      console.log(data);
+    },
   },
 };

@@ -18,6 +18,11 @@ export default {
     },
   },
   actions: {
+    async addTask({ dc, task }) {
+      fetch(`http://localhost:5000/dc/${dc}/task/${task}`, {
+        method: 'PUT',
+      });
+    },
     async newDataCenter({ commit, dispatch, state }, { lat, lon }) {
       /* let maxLblIndex = 0;
       for (let i = 0; i < state.dataCenters.length; i += 1) {
@@ -45,6 +50,26 @@ export default {
     /* saveDataCenters({ state }) {
       sessionStorage.setItem('dataCenters', JSON.stringify(state.dataCenters));
     }, */
+    async getWeatherForDataCenter({ state }, i) {
+      const dc = state.dataCenters[i];
+
+      const resp = await fetch('http://localhost:8000/?days=2', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lat: dc.lat,
+          long: dc.lon,
+          capacity: dc.solarArea,
+          turbines: dc.numTurbines,
+        }),
+      });
+
+      const data = await resp.json();
+      console.log(data);
+      state.dataCenters[i].weather = data;
+    },
     loadDataCenters({ state }) {
       const data = sessionStorage.getItem('dataCenters');
       if (data) {

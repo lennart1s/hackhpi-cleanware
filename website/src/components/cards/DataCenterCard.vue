@@ -73,6 +73,7 @@ export default {
           lat: this.lat,
           lon: this.lon,
           tasks: this.dc.tasks,
+          weather: this.dc.weather,
         },
         index: this.dcIndex,
       });

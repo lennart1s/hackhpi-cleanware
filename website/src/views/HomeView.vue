@@ -24,7 +24,7 @@ import Map from '@/components/Map.vue';
 import DataCenterCard from '@/components/cards/DataCenterCard.vue';
 import LineChart from '@/components/charts/LineChart.vue';
 // import PieChart from '@/components/charts/PieChart.vue';
-import { mapGetters, mapMutations } from 'vuex';
+import { mapGetters, mapMutations, mapActions } from 'vuex';
 
 export default {
   name: 'HomeView',
@@ -36,12 +36,14 @@ export default {
   },
   methods: {
     ...mapMutations(['setTime']),
+    ...mapActions(['getWeatherForDataCenter']),
     handleRun() {
       console.log('run');
       this.setTime(this.time + 1);
     },
-    handleMapCreation({ long, lat, n }) {
+    async handleMapCreation({ long, lat, n }) {
       // console.log(long, lat, n);
+      await this.getWeatherForDataCenter(n - 1);
       this.$refs.dcc.setup(long, lat, n);
     },
     handleMapClick(n) {

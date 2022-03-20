@@ -25,7 +25,7 @@
       </form>
       <div class="list">
         <div v-for="t, i of tasks" :key="i" class="task">
-          {{ i + 1 }}. &nbsp; {{ t }} <span><button @click="removeTask(i)">x</button></span>
+          {{ i + 1 }}. &nbsp; {{ t.cpup }} <span><button @click="removeTask(i)">x</button></span>
         </div>
       </div>
     </div>
@@ -51,12 +51,14 @@ export default {
   }),
   methods: {
     ...mapMutations(['setDataCenter']),
-    ...mapActions(['saveDataCenters']),
+    ...mapActions(['saveDataCenters', 'addTask']),
     show() {
       this.tasks = this.dc.tasks;
       this.$refs.card.show();
     },
     async addNewTask() {
+      // let name = Math.random().toString(36).substr(2, 5);
+
       const cpup = this.$refs.cpup.value;
       this.dc.tasks.push(cpup);
       await this.setDataCenter({
@@ -65,6 +67,7 @@ export default {
       });
       this.saveDataCenters();
       this.tasks = this.dc.tasks;
+      this.addTask({ dc: this.dcIndex, cpup });
     },
     async addRandomTasks() {
       const n = this.$refs.numRand.value;
